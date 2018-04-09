@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="referrer" content="never">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_621135_0bwidc7h16upu8fr.css">
+    <style type="text/css" media="screen">
+        * {
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        html,
+        body {
+            height:100%;
+        }
+        .clearfix::after{
+            content:"";
+            display:block;
+            clear:both;
+        }
+
+        a{
+            text-decoration:none;
+
+        }
+
+        .container .item {
+            border-bottom:1px solid #ccc;
+        }
+
+        .container .item .cover {
+            float: left;
+        }
+
+        .container .item .cover img,
+        .container .item .cover
+        {
+            width: 70px;
+        }
+
+        .container .item .detail {
+            margin-left:75px;
+        }
+
+        .container .item .detail .extra {
+            font-size:12px;
+            color:#999;
+        }
+
+        main {
+            position:relative;
+            height: 100%;
+        }
+
+        main section {
+            height:calc(100% - 50px);
+            overflow:scroll;
+            display: none;
+        }
+
+        main section:nth-child(1){
+            display:block;
+        }
+        footer {
+            width: 100%;
+            display:flex;
+            position:absolute;
+            bottom:0;
+
+        }
+
+        footer .active {
+            color:#FF5722;
+        }
+
+        footer div {
+            flex:1;
+            text-align:center;
+        }
+
+        footer span {
+            height: 25px;
+            display: block;
+            align-items: center;
+        }
+    </style>
+    <title>豆瓣demo</title>
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("footer>div").on("click",function(){
+                var $index = $(this).index();
+                console.log($index)
+                 $("main section").eq($index).fadeIn().siblings().fadeOut();
+                $(this).addClass("active").siblings().removeClass("active") ;
+            })
+            $.ajax({
+                url:"https://api.douban.com/v2/movie/top250",
+                dataType:"jsonp",
+                type:"get"
+
+            }).done(function(x){
+                console.log(x) ;
+                var node = `
+                <div class="item">
+                    <a class="clearfix" href="">
+                        <div class="cover">
+                            <img src="http://img3.doubanio.com/view/photo/s_ratio_poster/public/p510876377.jpg" alt="">
+                        </div>
+                        <div class="detail">
+                            <h2>肖申克的救赎</h2>
+                            <div class="extra">
+                                9.6分/1234323收藏
+                            </div>
+                            <div class="extra">
+                                1994/犯罪/剧情
+                            </div>
+                            <div class="extra">
+                                导演:弗兰克.德拉邦特
+                            </div>
+                            <div class="extra">
+                                主演:蒂姆·罗宾斯、摩根·弗里曼、鲍勃·冈顿
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+                `
+               var $_node= $(node).find(".cover").text();
+               console.log($(node).find(".cover").text())
+                $("#top250 .container").append($_node)
+
+
+            })
+        })
+    </script>
+</head>
+<body>
+    <main>
+        <section id="top250">
+            <div class="container">
+                <div class="item">
+                    <a class="clearfix" href="">
+                        <div class="cover">
+                            <img src="http://img3.doubanio.com/view/photo/s_ratio_poster/public/p510876377.jpg" alt="">
+                        </div>
+                        <div class="detail">
+                            <h2>肖申克的救赎</h2>
+                            <div class="extra">
+                                9.6分/1234323收藏
+                            </div>
+                            <div class="extra">
+                                1994/犯罪/剧情
+                            </div>
+                            <div class="extra">
+                                导演:弗兰克.德拉邦特
+                            </div>
+                            <div class="extra">
+                                主演:蒂姆·罗宾斯、摩根·弗里曼、鲍勃·冈顿
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="loading">
+
+            </div>
+        </section>
+        <section id="beimei">
+            3
+        </section>
+        <section id="search">
+4
+        </section>
+    </main>
+    <footer>
+        <div class="active">
+            <span class="iconfont icon-paihangbang"></span>
+            <span>Top250</span>
+        </div>
+        <div>
+            <span class="iconfont icon-beimei"></span>
+            <span>北美</span>
+        </div>
+        <div>
+            <span class="iconfont icon-search"></span>
+            <span>搜索</span>
+        </div>
+    </footer>
+</body>
+</html>
