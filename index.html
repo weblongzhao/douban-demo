@@ -103,8 +103,16 @@
                 type:"get"
 
             }).done(function(x){
-                console.log(x) ;
-                var node = `
+                console.log(x.subjects) ;
+                var sub = x.subjects;
+
+
+               sub.forEach(function(item,index){
+                var casts=[] ;
+                item.casts.forEach(function(a){
+                    casts.push(a.name) ;
+                })
+                 var node = `
                 <div class="item">
                     <a class="clearfix" href="">
                         <div class="cover">
@@ -129,9 +137,23 @@
                     </a>
                 </div>
                 `
-               var $_node= $(node).find(".cover").text();
-               console.log($(node).find(".cover").text())
-                $("#top250 .container").append($_node)
+               var $node= $(node) ;
+                    $($node).find(".cover > img").attr("src",item.images.large) ;
+                    $node.find(".detail > h2").text(item.title) ;
+                    $node.find(".detail .extra").eq(0).text(item.rating.average+"分/"+item.collect_count+"收藏") ;
+                    $node.find(".detail .extra").eq(1).text(item.year+""+item.genres.join("/")) ;
+                    $node.find(".detail .extra").eq(2).text("导演:"+item.directors[0].name) ;
+                    $node.find(".detail .extra").eq(3).text("主演:"+casts.join("、")) ;
+
+                    $("#top250 .container").append($node);
+               })
+               console.log($($node).find(".cover > img").attr("src"))
+               console.log( $node.find(".detail > h2").text()) ;
+               console.log($node.find(".detail .extra").eq(0).text()) ;
+               console.log($node.find(".detail .extra").eq(1).text()) ;
+               console.log($node.find(".detail .extra").eq(2).text()) ;
+               console.log($node.find(".detail .extra").eq(3).text()) ;
+
 
 
             })
@@ -142,7 +164,7 @@
     <main>
         <section id="top250">
             <div class="container">
-                <div class="item">
+                <!-- <div class="item">
                     <a class="clearfix" href="">
                         <div class="cover">
                             <img src="http://img3.doubanio.com/view/photo/s_ratio_poster/public/p510876377.jpg" alt="">
@@ -164,7 +186,7 @@
 
                         </div>
                     </a>
-                </div>
+                </div> -->
             </div>
             <div class="loading">
 
