@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="referrer" content="never">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_621135_0bwidc7h16upu8fr.css">
+    <link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_621135_20bgu8c1ndvlsor.css">
     <style type="text/css" media="screen">
         * {
             margin:0;
@@ -64,6 +64,19 @@
         main section:nth-child(1){
             display:block;
         }
+
+        .loading {
+            text-align:center;
+        }
+
+        .loading span {
+            display:inline-block;
+            animation:wait 0.5s linear infinite;
+        }
+        @keyframes wait {
+            0% {transform:rotate(0deg);}
+            100% {transform:rotate(360deg);}
+        }
         footer {
             width: 100%;
             display:flex;
@@ -90,6 +103,30 @@
     <title>豆瓣demo</title>
     <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/javascript">
+    var index=0 ;
+    var app = {
+        init:function(){
+            top250Page.init()
+           /* beimeiPage.init()
+            searchPage.init()*/
+        }
+    }
+
+    var top250Page = {
+        init:function(){
+            this.bind();
+
+        },
+        bind:function(){
+
+        },
+        getData:function(){
+
+        },
+        render: function(){
+
+        }
+    }
         $(document).ready(function(){
             $("footer>div").on("click",function(){
                 var $index = $(this).index();
@@ -100,14 +137,88 @@
             $.ajax({
                 url:"https://api.douban.com/v2/movie/top250",
                 dataType:"jsonp",
-                type:"get"
+                type:"get",
+                data:{
+                    start:index,
+                    count:10
+                }
+            }).done(function(x){
+                console.log(x.subjects) ;
+                index+=10;
+                var sub = x.subjects;
+                sub.forEach(function(item,index){
+                var casts=[] ;
+                item.casts.forEach(function(a){
+                    casts.push(a.name) ;
+                }) ;
+                 var node = `
+                <div class="item">
+                    <a class="clearfix" href="">
+                        <div class="cover">
+                            <img src="http://img3.doubanio.com/view/photo/s_ratio_poster/public/p510876377.jpg" alt="">
+                        </div>
+                        <div class="detail">
+                            <h2>肖申克的救赎</h2>
+                            <div class="extra">
+                                9.6分/1234323收藏
+                            </div>
+                            <div class="extra">
+                                1994/犯罪/剧情
+                            </div>
+                            <div class="extra">
+                                导演:弗兰克.德拉邦特
+                            </div>
+                            <div class="extra">
+                                主演:蒂姆·罗宾斯、摩根·弗里曼、鲍勃·冈顿
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+                `
+               var $node= $(node) ;
+                    $($node).find(".cover > img").attr("src",item.images.large) ;
+                    $node.find(".detail > h2").text(item.title) ;
+                    $node.find(".detail .extra").eq(0).text(item.rating.average+"分/"+item.collect_count+"收藏") ;
+                    $node.find(".detail .extra").eq(1).text(item.year+""+item.genres.join("/")) ;
+                    $node.find(".detail .extra").eq(2).text("导演:"+item.directors[0].name) ;
+                    $node.find(".detail .extra").eq(3).text("主演:"+casts.join("、")) ;
+                    $("#top250 .container").append($node);
+               })
+               $("#top250 .loading span").hide()
+            })
+
+            //滚动监听
+            var time=null;
+            $("#top250").on("scroll",function(e){
+                if(time){
+                    clearTimeout(time);
+                }
+                time=setTimeout(function(){
+                    var view = $("#top250").height();
+                    var height = $(".container").height() ;
+                    //view =$("#top250").height()  height=$(".container").height()
+                        console.log(height)
+                        console.log(view+$("#top250").scrollTop())
+                    //滚动到底部
+                    if(view+$("#top250").scrollTop() > height-20){
+                        console.log("show")
+                        $("#top250 .loading span").show(100)
+                 /*获取数据并渲染dom*/
+                         $.ajax({
+                url:"https://api.douban.com/v2/movie/top250",
+                dataType:"jsonp",
+                type:"get",
+                data:{
+                    start:index,
+                    count:10
+                }
 
             }).done(function(x){
                 console.log(x.subjects) ;
+                index+=10;
                 var sub = x.subjects;
-
-
-               sub.forEach(function(item,index){
+              sub.forEach(function(item,index){
                 var casts=[] ;
                 item.casts.forEach(function(a){
                     casts.push(a.name) ;
@@ -147,15 +258,13 @@
 
                     $("#top250 .container").append($node);
                })
-               console.log($($node).find(".cover > img").attr("src"))
-               console.log( $node.find(".detail > h2").text()) ;
-               console.log($node.find(".detail .extra").eq(0).text()) ;
-               console.log($node.find(".detail .extra").eq(1).text()) ;
-               console.log($node.find(".detail .extra").eq(2).text()) ;
-               console.log($node.find(".detail .extra").eq(3).text()) ;
+            $("#top250 .loading span").hide()
 
-
-
+            })
+             /*获取数据并渲染dom 结束*/
+                     console.log('scrollbottom')
+                    }
+                },100)
             })
         })
     </script>
@@ -189,7 +298,7 @@
                 </div> -->
             </div>
             <div class="loading">
-
+                <span class="iconfont icon-loading"></span>
             </div>
         </section>
         <section id="beimei">
