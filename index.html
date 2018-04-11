@@ -173,7 +173,39 @@
                 </div>
             </section>
             <section id="search">
-                4
+                <div class="search">
+                    <input id="sear" type="text">
+                    <button id="btn" type="button">搜索</button>
+                </div>
+                <div class="container">
+                    <!-- <div class="item">
+                    <a class="clearfix" href="">
+                        <div class="cover">
+                            <img src="http://img3.doubanio.com/view/photo/s_ratio_poster/public/p510876377.jpg" alt="">
+                        </div>
+                        <div class="detail">
+                            <h2>肖申克的救赎</h2>
+                            <div class="extra">
+                                9.6分/1234323收藏
+                            </div>
+                            <div class="extra">
+                                1994/犯罪/剧情
+                            </div>
+                            <div class="extra">
+                                导演:弗兰克.德拉邦特
+                            </div>
+                            <div class="extra">
+                                主演:蒂姆·罗宾斯、摩根·弗里曼、鲍勃·冈顿
+                            </div>
+
+                        </div>
+                    </a>
+                </div> -->
+                </div>
+                <div class="loading">
+                    <span class="iconfont icon-loading">
+                    </span>
+                </div>
             </section>
         </main>
         <footer>
@@ -204,6 +236,7 @@
             init:function(){
                 top250Page.init()
                 beimeiPage.init()
+                searchPage.init()
                 this.bind()
                /* beimeiPage.init()
                   searchPage.init()*/
@@ -227,8 +260,8 @@
                 this.render()
             },
             bind:function(){
-                var time=null;
                 var _this = this ;
+                var time=null;
                 this.view.on("scroll",function(e){
                     if(time){
                         clearTimeout(time);
@@ -383,6 +416,111 @@
                         $("#beimei .container").append($node);
                    })
                    $("#beimei .loading span").hide()
+                    /*数据处理end*/
+                })
+            }
+        }
+
+        var searchPage={
+            init:function(){
+                this.view=$("#search");
+                this.container =$(".container");
+                this.bind() ;
+                this.query="";
+                this.index=0;
+            },
+            bind:function(){
+                var _this=this;
+                console.log(this)
+                $("#btn").on('click',function(){
+                    _this.query=$("#sear").val()
+                   _this.render()
+                })
+                //滚动底部检测
+                var time=null;
+                this.view.on("scroll",function(e){
+                    console.log(this.query)
+                    if(time){
+                        clearTimeout(time);
+                    }
+                    time=setTimeout(function(){
+                        var view = _this.view.height();
+                        var height = _this.container.height() ;
+                        //滚动到底部
+                         if(view+$("#search").scrollTop() > height-20){
+                            console.log("scrollBottom")
+                            $("#search .loading span").show(100)
+                            _this.render()
+                         }
+                    },200)
+
+                })
+            },
+            getData:function(callback){
+                var _this = this;
+                $.ajax({
+                    url:"https://api.douban.com/v2/movie/search",
+                    dataType:"jsonp",
+                    type:"get",
+                    data:{
+                        q:_this.query,
+                        start:_this.index,
+                        count:10
+                    }
+                }).done(function(res){
+                    //_this.query="";
+                    _this.index+=10;
+                    callback(res)
+                })
+            },
+            render:function(){
+                //$("#search .container").empty()
+                this.getData(function(x){
+                    console.log(111)
+                    console.log(x)
+                    /*数据处理*/
+                var sub = x.subjects;
+                    sub.forEach(function(item,index){
+                    var casts=[] ;
+                    item.casts.forEach(function(a){
+                        casts.push(a.name) ;
+                    }) ;
+                    
+                     var node = `
+                    <div class="item">
+                        <a class="clearfix" href="">
+                            <div class="cover">
+                                <img src="http://img3.doubanio.com/view/photo/s_ratio_poster/public/p510876377.jpg" alt="">
+                            </div>
+                            <div class="detail">
+                                <h2>肖申克的救赎</h2>
+                                <div class="extra">
+                                    9.6分/1234323收藏
+                                </div>
+                                <div class="extra">
+                                    1994/犯罪/剧情
+                                </div>
+                                <div class="extra">
+                                    导演:弗兰克.德拉邦特
+                                </div>
+                                <div class="extra">
+                                    主演:蒂姆·罗宾斯、摩根·弗里曼、鲍勃·冈顿
+                                </div>
+
+                            </div>
+                        </a>
+                    </div>
+                    `
+                   var $node= $(node) ;
+                        $($node).find(".cover > img").attr("src",item.images.large) ;
+                        $node.find(".detail > h2").text(item.title) ;
+                        $node.find(".detail .extra").eq(0).text(item.rating.average+"分/"+item.collect_count+"收藏") ;
+                        $node.find(".detail .extra").eq(1).text(item.year+""+item.genres.join("/")) ;
+                        $node.find(".detail .extra").eq(2).text("导演:"+item.directors[0].name) ;
+                        $node.find(".detail .extra").eq(3).text("主演:"+casts.join("、")) ;
+                        $("#search .container").append($node);
+                   })
+                   $("#search .loading span").hide()
                     /*数据处理end*/
                 })
             }
