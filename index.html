@@ -319,6 +319,11 @@
                     item.casts.forEach(function(a){
                         casts.push(a.name) ;
                     }) ;
+                    //导演
+                    var directors =[];
+                    item.directors.forEach(function(x){
+                        directors.push(x.name)
+                    })
                      var node = `
                     <div class="item">
                         <a class="clearfix" href="">
@@ -349,7 +354,7 @@
                         $node.find(".detail > h2").text(item.title) ;
                         $node.find(".detail .extra").eq(0).text(item.rating.average+"分/"+item.collect_count+"收藏") ;
                         $node.find(".detail .extra").eq(1).text(item.year+""+item.genres.join("/")) ;
-                        $node.find(".detail .extra").eq(2).text("导演:"+item.directors[0].name) ;
+                        $node.find(".detail .extra").eq(2).text("导演:"+directors.join("、")) ;
                         $node.find(".detail .extra").eq(3).text("主演:"+casts.join("、")) ;
                         $("#top250 .container").append($node);
                    })
@@ -503,11 +508,17 @@
                     /*数据处理*/
                 var sub = x.subjects;
                     sub.forEach(function(item,index){
+                    console.log(item)
+                    //演员
                     var casts=[] ;
                     item.casts.forEach(function(a){
                         casts.push(a.name) ;
                     }) ;
-
+                    //导演
+                    var directors =[];
+                    item.directors.forEach(function(x){
+                        directors.push(x.name)
+                    })
                      var node = `
                     <div class="item">
                         <a class="clearfix" href="">
@@ -528,20 +539,20 @@
                                 <div class="extra">
                                     主演:蒂姆·罗宾斯、摩根·弗里曼、鲍勃·冈顿
                                 </div>
-
                             </div>
                         </a>
                     </div>
                     `
-                   var $node= $(node) ;
+                        var $node= $(node) ;
                         $($node).find(".cover > img").attr("src",item.images.large) ;
                         $node.find(".detail > h2").text(item.title) ;
                         $node.find(".detail .extra").eq(0).text(item.rating.average+"分/"+item.collect_count+"收藏") ;
                         $node.find(".detail .extra").eq(1).text(item.year+""+item.genres.join("/")) ;
-                        $node.find(".detail .extra").eq(2).text("导演:"+item.directors[0].name) ;
+                        $node.find(".detail .extra").eq(2).text("导演:"+directors.join("、")) ;
                         $node.find(".detail .extra").eq(3).text("主演:"+casts.join("、")) ;
                         $("#search .container").append($node);
                    })
+                    console.log("数据加载完...")
                    $("#search .loading span").hide()
                     /*数据处理end*/
                 })
