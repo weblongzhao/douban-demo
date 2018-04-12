@@ -21,7 +21,15 @@
             display:block;
             clear:both;
         }
-
+        #sear {
+            width: calc(100% - 52px);
+            padding: 2px 0;
+        }
+        button {
+            border-style:none;
+            outline: none;
+            padding:4px 10px;
+        }
         a{
             text-decoration:none;
 
@@ -67,6 +75,9 @@
 
         .loading {
             text-align:center;
+        }
+        #search .loading span{
+            display: none;
         }
 
         .loading span {
@@ -174,7 +185,7 @@
             </section>
             <section id="search">
                 <div class="search">
-                    <input id="sear" type="text">
+                    <input id="sear" type="text" placeholder="搜索电影名称">
                     <button id="btn" type="button">搜索</button>
                 </div>
                 <div class="container">
@@ -255,6 +266,7 @@
                 this.view=$("#top250")
                 this.container =$(".container")
                 console.log("top250")
+                this.loading=false;
                 this.index=0;
                 this.bind()
                 this.render()
@@ -269,18 +281,20 @@
                     time=setTimeout(function(){
                         var view = _this.view.height();
                         var height = _this.container.height() ;
+                        $("#top250 .loading span").show(100)
                         //滚动到底部
                          if(view+$("#top250").scrollTop() > height-20){
                             console.log("scrollBottom")
-                            $("#top250 .loading span").show(100)
                             _this.render()
                          }
-                    },200)
+                    },500)
 
                 })
             },
             getData:function(callback){
                 var _this = this;
+                if(_this.loading) return;
+                _this.loading = true;
                 $.ajax({
                     url:"https://api.douban.com/v2/movie/top250",
                     dataType:"jsonp",
@@ -290,8 +304,9 @@
                         count:10
                     }
                 }).done(function(res){
-                    _this.index+=10;
                     callback(res)
+                    _this.index+=10;
+                    _this.loading=false;
                 })
             },
             render: function(){
@@ -431,28 +446,35 @@
             },
             bind:function(){
                 var _this=this;
-                console.log(this)
+                var time=null;
                 $("#btn").on('click',function(){
-                    _this.query=$("#sear").val()
-                   _this.render()
+                    if(($("#sear").val()!=_this.query)){
+                        $("#search .container").empty()
+                        $("#search .loading span").show(100) ;
+                        _this.index=0;
+                        _this.query=$("#sear").val()
+                        _this.render()
+                    }else{
+                        console.log("请输入新的值")
+                        return
+                    }
                 })
                 //滚动底部检测
-                var time=null;
                 this.view.on("scroll",function(e){
-                    console.log(this.query)
                     if(time){
                         clearTimeout(time);
                     }
                     time=setTimeout(function(){
-                        var view = _this.view.height();
+                        var view = _this.view.height() ;
                         var height = _this.container.height() ;
+                        $("#search .loading span").show(100) ;
                         //滚动到底部
-                         if(view+$("#search").scrollTop() > height-20){
+                        console.log(view+":view"+height+":height")
+                        if(view+$("#search").scrollTop() > height-20){
                             console.log("scrollBottom")
-                            $("#search .loading span").show(100)
                             _this.render()
-                         }
-                    },200)
+                        }
+                    },500)
 
                 })
             },
@@ -485,7 +507,7 @@
                     item.casts.forEach(function(a){
                         casts.push(a.name) ;
                     }) ;
-                    
+
                      var node = `
                     <div class="item">
                         <a class="clearfix" href="">
